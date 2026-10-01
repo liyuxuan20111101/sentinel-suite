@@ -1,0 +1,38 @@
+{
+  "case": "case-001-redis-eviction-storm",
+  "root_cause": "Redis 实例 redis-cache-prod-3 的 maxmemory（32GB）被订单详情缓存写满，allkeys-lru 开始大规模淘汰热 key（14:10 起 evicted_keys 飙升、命中率 0.97→0.38），缓存击穿导致 DB 连接池打满、p99 飙升。诱因是积分展示上线带来的新写入加速了内存增长；发布本身（只读逻辑）不是直接原因。",
+  "pass_threshold": 0.8,
+  "items": [
+    {
+      "id": "root-cause-eviction",
+      "weight": 0.5,
+      "required": true,
+      "any_of": [["redis", "缓存"], ["evict", "淘汰"]],
+      "label": "定位到 Redis 内存满/淘汰热 key 是雪崩源头"
+    },
+    {
+      "id": "chain-db-pool",
+      "weight": 0.15,
+      "any_of": [["连接池"], ["connection pool", "pool"], ["db", "数据库"]],
+      "label": "识别传播链：缓存击穿 → DB 连接池打满"
+    },
+    {
+      "id": "evidence-metrics",
+      "weight": 0.15,
+      "any_of": [["命中率", "hit"], ["evicted", "淘汰"], ["maxmemory", "内存"]],
+      "label": "用指标/日志佐证（命中率骤降、evicted 飙升、maxmemory 满）"
+    },
+    {
+      "id": "no-wrong-fix",
+      "weight": 0.1,
+      "forbid": [["扩容", "升配", "scale", "upgrade", "加机器"]],
+      "label": "没有把'无脑扩容 DB/加机器'当解决方案（那是掩盖，内存还在涨）"
+    },
+    {
+      "id": "mitigation",
+      "weight": 0.1,
+      "any_of": [["maxmemory", "淘汰策略", "allkeys-lru", "noeviction"], ["预热", "预热缓存"], ["ttl", "过期时间"]],
+      "label": "给出针对性处置：调 maxmemory/淘汰策略、缓存预热或 TTL 治理"
+    }
+  ]
+}

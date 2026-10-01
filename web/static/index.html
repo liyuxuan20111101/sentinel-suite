@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AI Tool Suite</title>
+<link rel="stylesheet" href="/style.css">
+</head>
+<body>
+<div class="app">
+  <aside class="sidebar">
+    <div class="brand">
+      <div class="brand-mark">⚔</div>
+      <div>
+        <div class="brand-name">AI Tool Suite</div>
+        <div class="brand-sub">五个没人做但都该存在的工具</div>
+      </div>
+    </div>
+    <nav id="nav">
+      <button class="nav-item active" data-tool="diffverifier">
+        <span class="nav-icon">⚖</span>
+        <span><b>DiffVerifier</b><i>行为等价性验证</i></span>
+      </button>
+      <button class="nav-item" data-tool="slopfirewall">
+        <span class="nav-icon">🛡</span>
+        <span><b>SlopFirewall</b><i>包幻觉门禁</i></span>
+      </button>
+      <button class="nav-item" data-tool="replaykit">
+        <span class="nav-icon">⏱</span>
+        <span><b>ReplayKit</b><i>Agent 轨迹重放</i></span>
+      </button>
+      <button class="nav-item" data-tool="posttrain">
+        <span class="nav-icon">🩺</span>
+        <span><b>PostTrain-Doctor</b><i>RL 后训练诊断</i></span>
+      </button>
+      <button class="nav-item" data-tool="opsbench">
+        <span class="nav-icon">📐</span>
+        <span><b>OpsBench</b><i>RCA 根因分析基准</i></span>
+      </button>
+    </nav>
+    <div class="sidebar-foot">本地运行 · 只绑 127.0.0.1<br>MIT License</div>
+  </aside>
+
+  <main class="main">
+    <!-- DiffVerifier -->
+    <section class="panel active" id="panel-diffverifier">
+      <h1>DiffVerifier <span class="tagline">AI 补丁的行为等价性验证器</span></h1>
+      <p class="desc">不审风格，只回答一个问题：<b>这个改动在原有输入空间里会不会改变行为</b>。旧实现缺省取 <code>.bak</code>（改动前备份），也可显式给两个文件。</p>
+      <div class="card">
+        <div class="mode-row">
+          <label><input type="radio" name="dv-mode" value="bak" checked> .bak 模式（对比上一次改动）</label>
+          <label><input type="radio" name="dv-mode" value="explicit"> 显式新旧</label>
+        </div>
+        <div class="form-grid">
+          <label class="dv-bak-only">改动后的文件路径<input id="dv-path" placeholder="C:/path/to/x.py"></label>
+          <label class="dv-explicit-only hidden">旧版本路径<input id="dv-old" placeholder="old.py"></label>
+          <label class="dv-explicit-only hidden">新版本路径<input id="dv-new" placeholder="new.py"></label>
+        </div>
+        <label>用例（参数用字面量，多个用例用 | 分隔）
+          <input id="dv-calls" placeholder="calc(2, 3)|calc(0, 0)|greet('hi')">
+        </label>
+        <div class="check-row">
+          <label><input type="checkbox" id="dv-auto"> 自动生成用例（按函数签名构造典型边界输入，覆盖全部公开函数；填了用例则优先用例）</label>
+        </div>
+        <button class="run" data-run="diffverifier">运行对比</button>
+      </div>
+    </section>
+
+    <!-- SlopFirewall -->
+    <section class="panel" id="panel-slopfirewall">
+      <h1>SlopFirewall <span class="tagline">包幻觉 / MCP 供应链门禁</span></h1>
+      <p class="desc">AI 会自信地生成<b>不存在的包名</b>，攻击者抢注后就是现成的投毒位。在包名落进 <code>pip install</code> 之前核一遍。</p>
+      <div class="card">
+        <label>包名列表 / requirements.txt / 含 pip install 的文本
+          <textarea id="sf-text" rows="7" placeholder="requests&#10;flask&#10;facny-colorlog"></textarea>
+        </label>
+        <div class="check-row">
+          <label><input type="checkbox" id="sf-seeds" checked> 启用种子库（已知幻觉包名直接拦）</label>
+          <label><input type="checkbox" id="sf-nocache"> 不用缓存</label>
+        </div>
+        <button class="run" data-run="slopfirewall">核查</button>
+      </div>
+    </section>
+
+    <!-- ReplayKit -->
+    <section class="panel" id="panel-replaykit">
+      <h1>ReplayKit <span class="tagline">Agent 可重放运行时</span></h1>
+      <p class="desc">60% 的首次分歧发生在最前两步——日志能看，不能跑。重放 JSONL 轨迹，<b>定位第一个分歧步</b>。</p>
+      <div class="card">
+        <label>轨迹文件路径（JSONL）
+          <input id="rk-trace" placeholder="C:/path/to/trace.jsonl">
+        </label>
+        <label>工具实现 .py（暴露 TOOLS 字典；留空 = 只看轨迹概览）
+          <input id="rk-tools" placeholder="C:/path/to/mytools.py（TOOLS = {'search': fn, ...}）">
+        </label>
+        <div class="check-row">
+          <label><input type="checkbox" id="rk-all"> 对比全部步骤（不停在首个分歧）</label>
+          <label>不稳定检测：每步重放 <input id="rk-repeat" type="number" min="1" max="10" value="1" style="width:52px"> 次</label>
+        </div>
+        <button class="run" data-run="replaykit">重放</button>
+      </div>
+    </section>
+
+    <!-- PostTrain-Doctor -->
+    <section class="panel" id="panel-posttrain">
+      <h1>PostTrain-Doctor <span class="tagline">RL 后训练诊断</span></h1>
+      <p class="desc">训练跑完，有没有人在回答"它是不是学会了骗 reward"？粘贴 episode 日志，输出<b>可审计的指纹</b>（RHR/NRFR 代理、长度膨胀、格式逃逸）。</p>
+      <div class="card">
+        <label>episode JSONL（每行一条：reward / success / ref_reward / length / format_ok）
+          <textarea id="ptd-text" rows="8" placeholder='{"step": 100, "reward": 0.92, "success": false, "ref_reward": 0.31, "length": 2400, "format_ok": false}'></textarea>
+        </label>
+        <div class="form-grid two">
+          <label>reward 高分阈值<input id="ptd-threshold" type="number" step="0.05" min="0" max="1" value="0.8"></label>
+          <div class="check-row"><label><input type="checkbox" id="ptd-quiet"> 只显示报警指纹</label></div>
+        </div>
+        <button class="run" data-run="posttrain">诊断</button>
+      </div>
+    </section>
+
+    <!-- OpsBench -->
+    <section class="panel" id="panel-opsbench">
+      <h1>OpsBench <span class="tagline">AIOps 的 SWE-bench</span></h1>
+      <p class="desc">RCA agent 端到端完美准确率仅 3.9%–12.5%，厂商却宣称"MTTR 降 40–58%"——这里是一把<b>中立的尺子</b>。选择案例，粘贴 agent 的根因分析。</p>
+      <div class="card">
+        <label>案例
+          <select id="ob-case"><option value="">加载中…</option></select>
+        </label>
+        <button class="link-btn" id="ob-load-example" type="button">填入示例答案（演示评分）</button>
+        <label>被测 agent 的 RCA 结论
+          <textarea id="ob-answer" rows="9" placeholder="根因是……&#10;处置建议……"></textarea>
+        </label>
+        <button class="run" data-run="opsbench">评分</button>
+      </div>
+    </section>
+
+    <!-- 结果区 -->
+    <div class="result-wrap">
+      <div class="result-head">
+        <span id="result-title">输出</span>
+        <span id="result-status" class="status idle">待运行</span>
+      </div>
+      <pre id="result" class="result empty">选择左侧工具，填好参数，点「运行」。</pre>
+    </div>
+  </main>
+</div>
+<script src="/app.js"></script>
+</body>
+</html>

@@ -1,0 +1,24 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ["3.9", "3.11", "3.13"]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Run tool tests
+        run: python tests/run_tests.py
+      # 网络型断言打真 PyPI（check_one 真实路径），失败可能只是网络抖动：continue-on-error
+      - name: Web API smoke (includes live PyPI check)
+        run: python tests/test_web.py
+        continue-on-error: true

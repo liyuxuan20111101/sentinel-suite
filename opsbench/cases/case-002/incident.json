@@ -1,0 +1,31 @@
+{
+  "case": "case-002-db-connection-leak",
+  "difficulty": "medium",
+  "service": "用户中心服务",
+  "symptom": "周一 09:20 起用户登录 intermittently 报 500（约 30% 请求），10:05 完全不可用；重启应用后恢复，周二同一时间复发。",
+  "inputs": {
+    "deploy_log": [
+      {"time": "周日 22:00", "event": "user-service v5.7 上线（新功能：登录页增加'最近登录设备'列表，查询 login_history 表）"},
+      {"time": "周一 09:00", "event": "早高峰开始，流量上升"}
+    ],
+    "alerts": [
+      {"time": "09:20", "rule": "http 5xx 比例 > 5%", "source": "user-service"},
+      {"time": "09:35", "rule": "pg_stat_activity 连接数 = max_connections(200)", "source": "pg-user-prod"},
+      {"time": "10:05", "rule": "健康检查失败，实例摘除", "source": "user-service"}
+    ],
+    "db_metrics": [
+      {"time": "08:30", "active_connections": 40, "idle_in_transaction": 2},
+      {"time": "09:20", "active_connections": 180, "idle_in_transaction": 150},
+      {"time": "09:40", "active_connections": 200, "idle_in_transaction": 196},
+      {"time": "10:05", "active_connections": 200, "idle_in_transaction": 198}
+    ],
+    "logs": [
+      {"time": "09:18:44", "source": "user-service", "level": "INFO", "msg": "login with device-history enabled (feature flag: device_list=on)"},
+      {"time": "09:21:10", "source": "user-service", "level": "ERROR", "msg": "psycopg2 pool exhausted; pending acquire count=87"},
+      {"time": "09:35:02", "source": "pg-user-prod", "level": "WARNING", "msg": "200/200 connections in 'idle in transaction' state, oldest 22min (query: SELECT * FROM login_history WHERE ...)"},
+      {"time": "10:05:00", "source": "lb", "level": "CRITICAL", "msg": "all health checks failing, instance removed from pool"}
+    ]
+  },
+  "notes": "案例为合成数据。核心模式：新查询代码在事务中打开游标后不关闭/不提交 → 连接滞留 'idle in transaction' → 连接池耗尽。干扰项：发布时间 proximity（周日上线但周一早高峰才炸 → 是流量触发而非发布本身出错）、'数据库慢'错觉（查询本身快，是事务挂住连接）。",
+  "ground_truth_ref": "ground_truth.json"
+}

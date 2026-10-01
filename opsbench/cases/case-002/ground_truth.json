@@ -1,0 +1,38 @@
+{
+  "case": "case-002-db-connection-leak",
+  "root_cause": "user-service 新增的'最近登录设备'查询在事务里打开连接后不归还（idle in transaction 堆积：196/200），连接池耗尽 → 登录 500 → 全实例不可用。周日上线埋下泄漏，周一早高峰流量把它顶到临界点；发布代码逻辑本身没写错结果，错在资源未释放。",
+  "pass_threshold": 0.8,
+  "items": [
+    {
+      "id": "root-cause-leak",
+      "weight": 0.45,
+      "required": true,
+      "any_of": [["idle in transaction", "空闲事务", "事务未", "连接泄漏", "leak", "未归还", "未释放", "没有释放", "未关闭"]],
+      "label": "定位到数据库连接泄漏（idle in transaction / 未归还连接）是根因"
+    },
+    {
+      "id": "trigger",
+      "weight": 0.15,
+      "any_of": [["早高峰", "流量", "高峰", "并发上升", "流量上升"]],
+      "label": "识别触发条件：早高峰流量把慢性泄漏顶到临界点（发布≠出错时刻）"
+    },
+    {
+      "id": "evidence",
+      "weight": 0.15,
+      "any_of": [["idle_in_transaction", "200/200", "max_connections", "连接数", "pool exhausted", "池耗尽", "连接池"]],
+      "label": "用指标/日志佐证（idle_in_transaction 堆积、200/200、pool exhausted）"
+    },
+    {
+      "id": "no-wrong-fix",
+      "weight": 0.1,
+      "forbid": [["回滚发布", "回滚版本", "回滚代码", "回滚上线"]],
+      "label": "没有把'回滚发布'当首选方案（可作缓解，但根因是泄漏，回滚下次流量上来还会炸）"
+    },
+    {
+      "id": "mitigation",
+      "weight": 0.15,
+      "any_of": [["with", "上下文管理", "try/finally", "finally", "关闭连接", "归还连接", "连接池设置", "超时", "statement_timeout", "idle_in_transaction_session_timeout"]],
+      "label": "给出针对性处置：确保连接归还（with/finally）、超时参数、池配置"
+    }
+  ]
+}

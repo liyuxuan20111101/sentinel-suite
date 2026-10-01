@@ -1,0 +1,34 @@
+{
+  "case": "case-001-redis-eviction-storm",
+  "difficulty": "easy-medium",
+  "service": "电商订单查询服务",
+  "symptom": "14:12 起 p99 延迟从 180ms 飙到 5.2s，错误率 0.1% → 9%，影响下单主链路。",
+  "inputs": {
+    "deploy_log": [
+      {"time": "14:02", "event": "order-service v2.31.0 灰度发布（新逻辑：订单详情页增加积分展示，只读 DB 字段）"},
+      {"time": "14:05", "event": "灰度 20% 完成，无告警"}
+    ],
+    "alerts": [
+      {"time": "14:12", "rule": "p99 > 2s 持续 5min", "source": "order-service"},
+      {"time": "14:14", "rule": "DB 连接池使用率 > 95%", "source": "order-service"},
+      {"time": "14:15", "rule": "redis_memory_used_ratio = 1.0", "source": "redis-cache-prod-3"}
+    ],
+    "redis_metrics": [
+      {"time": "13:40", "used_memory_ratio": 0.86, "evicted_keys_total": 0, "keyspace_hits_ratio": 0.97},
+      {"time": "14:08", "used_memory_ratio": 0.97, "evicted_keys_total": 0, "keyspace_hits_ratio": 0.96},
+      {"time": "14:10", "used_memory_ratio": 1.00, "evicted_keys_total": 120000, "keyspace_hits_ratio": 0.61},
+      {"time": "14:12", "used_memory_ratio": 1.00, "evicted_keys_total": 410000, "keyspace_hits_ratio": 0.38}
+    ],
+    "db_metrics": [
+      {"time": "13:40", "active_connections": 42, "slow_queries_per_min": 1},
+      {"time": "14:12", "active_connections": 198, "slow_queries_per_min": 87}
+    ],
+    "logs": [
+      {"time": "14:10:22", "source": "redis-cache-prod-3", "level": "WARNING", "msg": "maxmemory 32GB reached, policy=allkeys-lru, starting eviction"},
+      {"time": "14:11:03", "source": "order-service", "level": "ERROR", "msg": "cache miss storm on key pattern order:detail:* (hot key order:detail:88112 evicted)"},
+      {"time": "14:12:40", "source": "order-service", "level": "ERROR", "msg": "connection pool exhausted (198/198), waiting queue depth 1200"}
+    ]
+  },
+  "notes": "案例为合成数据，事故模式参照真实生产事故设计。故意放了两个干扰项：14:02 的发布（只读字段，与容量无关）和 DB 慢查询（是结果不是原因）。",
+  "ground_truth_ref": "ground_truth.json"
+}
