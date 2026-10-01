@@ -1,5 +1,7 @@
 # Changelog
 
+> Repository name: **sentinel-suite** (发布名；早期开发文件夹为 ai-tool-suite，内容一致).
+
 本仓库遵循 [Keep a Changelog](https://keepachangelog.com/zh-CN/1.1.0/)，版本号用 [SemVer](https://semver.org/lang/zh-CN/)。
 
 ## [0.2.0] - 2026-10-01

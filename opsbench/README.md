@@ -1,5 +1,19 @@
 # OpsBench — AIOps 的 SWE-bench（根因分析基准）
 
+## 🇬🇧 English
+
+**OpsBench** is a neutral benchmark for root-cause-analysis (RCA) agents. End-to-end perfect accuracy sits at 3.9%–12.5% while vendors claim "MTTR −40–58%" — the missing piece is a neutral ruler. This is a public good; nobody has a commercial incentive to build it, so it should be open.
+
+**What it does**: a case format (`incident.json` = symptoms/alerts/logs/metrics fed to the agent; `ground_truth.json` = root cause + weighted rubric with synonym groups, forbidden-answer patterns, and veto items) plus a zero-dependency scorer. Each case embeds deliberately designed distractors — cases without distractors only reward keyword stuffing. v0.1 ships two cases: Redis eviction storm, and a database connection leak.
+
+```bash
+python opsbench/score.py opsbench/cases/case-001 opsbench/cases/case-001/answer.example.md
+# PASS（得分 100%，门槛 80%）
+```
+
+> 中文说明在下方 ↓
+
+---
 **RCA agent 端到端完美准确率仅 3.9%–12.5%，而厂商宣称"MTTR 降 40–58%"**——中间缺一把**中立的尺子**。这是公共品，无人有商业动机做，所以它该是个开放基准。
 
 ## v0 是什么

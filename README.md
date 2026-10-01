@@ -1,8 +1,43 @@
-# AI Tool Suite — 五个没人做但都该存在的验证/诊断工具
+# Sentinel Suite — Five tools nobody builds, all of which should exist
+# Sentinel Suite — 五个没人做但都该存在的验证/诊断工具
 
-> **English**: Five verification & diagnostic tools for AI-generated work — behavioral
-> equivalence checking, package-hallucination firewall, agent trace replay,
-> RL reward-hacking fingerprints, and an RCA benchmark. Zero dependencies, CI-ready.
+---
+
+## 🇬🇧 English
+
+**Sentinel Suite** (五个没人做但都该存在的验证/诊断工具) is a collection of five zero-dependency tools that gatekeep AI-generated work. Each tool answers one sharp question and nothing else.
+
+**What it does**
+
+| Tool | Question it answers |
+|---|---|
+| **DiffVerifier** | Will this patch change behavior on inputs the old code already accepted? (Tests green ≠ nothing changed — SWE-Proof showed ~25% of passing patches still admit counterexamples.) |
+| **SlopFirewall** | Does this package name actually exist on PyPI? Blocks hallucinated / typo-squatted names before they hit `pip install`. |
+| **ReplayKit** | At which step did my agent's behavior first diverge? Records tool-call traces as JSONL and replays them. |
+| **PostTrain-Doctor** | Is my RL run reward-hacking? Heuristic fingerprints (RHR/NRFR proxies, length gaming, variance collapse) over episode logs. |
+| **OpsBench** | How good are RCA agents, really? A neutral benchmark between "3.9–12.5% perfect accuracy" and vendor claims of "MTTR −40–58%". |
+
+**How to use**
+
+```bash
+# Web dashboard (recommended): opens http://127.0.0.1:8642
+python web/server.py
+
+# Or CLI — one command per tool:
+python diffverifier/diffverifier.py --path src/calc.py --calls "calc(2, 3)|greet('hi')"
+python slopfirewall/slopfirewall.py scan requirements.txt
+python replaykit/replaykit.py replay trace.jsonl --tools mytools.py
+python posttrain-doctor/doctor.py analyze episodes.jsonl
+python opsbench/score.py opsbench/cases/case-001 answer.md
+```
+
+**Honest limits**: PostTrain-Doctor is heuristic, not a replication of paper metrics; OpsBench is keyword-level scoring. Every number's definition lives in the code — auditable and falsifiable. Zero third-party dependencies (pure Python 3.9+ stdlib), single-file CLIs, machine-readable exit codes, CI-ready.
+
+> 中文说明在下方 ↓
+
+---
+
+## 🇨🇳 中文
 
 LLM 生成的代码与决策正在大批进入生产环境，但验证工具没有跟上：
 测试全绿 ≠ 行为没变（SWE-Proof：25% 的通过补丁仍可构造反例）；

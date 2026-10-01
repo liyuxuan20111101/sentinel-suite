@@ -1,5 +1,21 @@
 # DiffVerifier — AI 补丁的行为等价性验证器
 
+## 🇬🇧 English
+
+**DiffVerifier** answers one question about a code change: *will it change behavior on inputs the old code already accepted?* Not style. Not review opinions.
+
+**Why it exists**: everyone builds tools that *generate review comments*; nobody builds tools that *prove behavior didn't change* — yet [SWE-Proof](https://arxiv.org/abs/2509.24162) showed ~25% of "tests pass" patches still admit counterexamples.
+
+**How it works**: give it an old implementation, a new implementation, and inputs from the original input space. It runs both and diffs the outputs. Same output → equivalence witnesses on those inputs. Different output → a **counterexample**: concrete input + old behavior + new behavior. Even exceptions count (one side throwing is a difference). Machine-readable exit codes (`0` same / `1` divergence / `2` error) drop straight into CI or pre-commit.
+
+```bash
+python diffverifier/diffverifier.py --path src/calc.py --calls "calc(2, 3)|greet('hi')"
+python diffverifier/diffverifier.py --path src/calc.py --auto        # signature-aware auto inputs
+```
+
+> 中文说明在下方 ↓
+
+---
 不审风格，只回答一个问题：**这个改动在原有输入空间里会不会改变行为。**
 
 **立身之本**：[SWE-Proof](https://arxiv.org/abs/2509.24162) 证明约 25% 的"测试通过"补丁仍可构造出反例。所有人都在做"生成 review 意见"，没人做"证明行为没变"。

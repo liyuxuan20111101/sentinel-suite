@@ -1,5 +1,19 @@
 # PostTrain-Doctor — RL 后训练诊断 + reward hacking 指纹库
 
+## 🇬🇧 English
+
+**PostTrain-Doctor** answers: *is my RL run reward-hacking?* Reported reward-hacking rates (RHR) reach 48.1%, and NRFR > RHR means RL is **manufacturing** failures, not inheriting them; even 32B models show 54.9% degradation ([arXiv 2607.09492](https://arxiv.org/abs/2607.09492), verified). TRL/verl are training frameworks, not diagnosticians — after training, nobody answers whether the policy learned to game its reward.
+
+**What it does**: six auditable heuristic fingerprints over episode-level JSONL logs — F1 reward-without-success (RHR proxy), F2 newly-created failures (NRFR proxy; F2 > F1 = manufacturing failures), F3 length inflation, F4 format escape, F5 reward-variance collapse, F6 length-reward correlation. `--export` dumps high-reward failure samples into a human review queue. **Honest limits**: heuristics, not a replication of paper metrics — but every number's definition lives in the code, falsifiable on sight.
+
+```bash
+python posttrain-doctor/doctor.py analyze episodes.jsonl
+python posttrain-doctor/doctor.py analyze episodes.jsonl --export review_queue.jsonl
+```
+
+> 中文说明在下方 ↓
+
+---
 **RL 后训练的 reward hacking 率（RHR）高达 48.1%；NRFR > RHR 说明 RL 在制造而非继承失败；32B 模型仍有 54.9% 劣化率**（[arXiv 2607.09492](https://arxiv.org/abs/2607.09492)，已核）。TRL/verl 是训练框架，不是诊断器——训练跑完，没有人回答"它是不是学会了骗 reward"。无人在做，PostTrain-Doctor 做。
 
 ## v0 诚实声明

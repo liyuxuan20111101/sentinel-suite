@@ -1,5 +1,20 @@
 # SlopFirewall — 包幻觉 / MCP 供应链门禁
 
+## 🇬🇧 English
+
+**SlopFirewall** verifies that a package name actually exists on PyPI *before* it lands in a `pip install`. Package-hallucination rates reach 19.7% and are stable across runs (see ["We Have a Package for You!"](https://arxiv.org/abs/2503.23008)); unregistered hallucinated names are ready-made typosquat poisoning slots, and neither IDEs nor CI check them.
+
+**What it does**: verdicts per name — ✅ exists / ❌ missing (likely hallucination, don't install) / ⛔ seed-list hit (known-bad, blocked offline) / ❓ network down → *unverifiable, honestly reported, never guessed*. Typosquat detection suggests the real package when a candidate is within edit distance 2 of a well-known one. `scan` parses requirements files, pip-install snippets, or walks whole project directories. Zero dependencies, Python 3.9+.
+
+```bash
+python slopfirewall/slopfirewall.py check requests facny-colorlog
+python slopfirewall/slopfirewall.py scan requirements.txt
+python slopfirewall/slopfirewall.py scan /path/to/project
+```
+
+> 中文说明在下方 ↓
+
+---
 **包幻觉率 19.7%，43% 稳定复现**（详见 ["We Have a Package for You!"](https://arxiv.org/abs/2503.23008) 一类研究），多模型共享的幻觉包名里有一批尚未被注册——这是现成的投毒位。而 IDE 与 CI 完全不设防。
 
 SlopFirewall 在包名落进 `pip install` 之前核一遍。零第三方依赖，Python 3.9+。

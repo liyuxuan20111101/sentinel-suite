@@ -1,5 +1,20 @@
 # ReplayKit — Agent 可重放运行时（v0）
 
+## 🇬🇧 English
+
+**ReplayKit** answers: *at which step did my agent's behavior first diverge?* 60% of first divergences happen within the first two steps, yet the industry stops at the log level — logs can be read, not re-run. There is no de-facto standard for agent replayability; ReplayKit aims to be one.
+
+**What it does**: records every agent tool call as a JSONL trace (`step/tool/args/result` — the single source of truth), replays recorded inputs against a tool implementation, and reports the **first divergent step** with recorded vs. replayed values. `--repeat N` classifies naturally nondeterministic steps (time/random tools) instead of false-alarming them; `compare` diffs two runs of the same agent with no tool code needed. Zero dependencies.
+
+```bash
+python replaykit/replaykit.py inspect trace.jsonl
+python replaykit/replaykit.py replay trace.jsonl --tools mytools.py --repeat 3
+python replaykit/replaykit.py compare run1.jsonl run2.jsonl
+```
+
+> 中文说明在下方 ↓
+
+---
 **60% 的 Agent 首次分歧发生在最前两步**，而行业普遍停在"日志层"——日志能看，不能跑。可重放性没有事实标准，ReplayKit 想补这一块。
 
 ## v0 是什么
