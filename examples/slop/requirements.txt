@@ -1,0 +1,4 @@
+# 演示：前两个是真实存在的包，第三个是故意拼错的（typosquat 演示）
+requests>=2.31
+numpy>=1.26
+reqests==2.31.0

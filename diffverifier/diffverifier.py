@@ -294,6 +294,8 @@ def main() -> int:
     if not new_p.exists() or not old_p.exists():
         print(f"diffverifier：文件不存在（old={old_p} new={new_p}）")
         return EXIT_ERROR
+    # 子进程在临时目录里执行被测代码，必须传绝对路径
+    old_p, new_p = old_p.resolve(), new_p.resolve()
 
     report, code = run_diff(old_p, new_p, calls, timeout=a.timeout)
     print(report)

@@ -4,6 +4,17 @@
 
 本仓库遵循 [Keep a Changelog](https://keepachangelog.com/zh-CN/1.1.0/)，版本号用 [SemVer](https://semver.org/lang/zh-CN/)。
 
+## [0.3.0] - 2026-10-23
+
+### Added
+- `sentinel.py` 统一入口：`diff / slop / replay / doctor / ops / web` 一个命令进所有工具；`sentinel.bat` 提供同样的 Windows 入口。
+- `sentinel.py demo`：用自带示例依次跑通五个工具的一分钟演示。
+- `examples/`：五个工具各自的可运行示例（含故意埋了行为差异、幻觉包名、轨迹分歧、reward hacking 指纹的样本）。
+- OpsBench 便捷化：`sentinel.py ops --list` 列出自带案例；案例编号（如 `case-001`）自动解析到 `opsbench/cases/`；RCA 结论可直接传文本。
+
+### Fixed
+- DiffVerifier：`--old/--new/--path` 传相对路径时，子进程在临时目录里执行会找不到文件——入口现统一解析为绝对路径。
+
 ## [0.2.0] - 2026-10-01
 
 ### Added
