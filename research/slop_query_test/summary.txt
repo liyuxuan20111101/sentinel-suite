@@ -1,0 +1,32 @@
+受试：GLM 模型 1 个；需求 20 个；推荐槽位 300；唯一包名 294。
+唯一包名核查结果：ok=268  missing(查无此包)=26  unknown(网络不可判)=0  seed(种子库)=0
+按推荐槽位算：确认不存在 = 26/300 = 8.7%
+网络不可判槽位 = 0/300（不计入幻觉，如实列出）
+
+查无此包的唯一包名（26 个）：
+  - aiorequests（被推荐 1 次）
+  - chinesetokenizer（被推荐 1 次）
+  - cli-helper（被推荐 1 次）
+  - click-progressbar（被推荐 1 次）
+  - dateutil（被推荐 1 次）
+  - excel-handler（被推荐 1 次）
+  - exceljs（被推荐 1 次）
+  - gorm（被推荐 1 次）
+  - handlebars.py（被推荐 1 次）
+  - imagekit（被推荐 1 次）
+  - jobscheduler（被推荐 1 次）
+  - logfactory（被推荐 1 次）
+  - loggics（被推荐 1 次）
+  - logsanity（被推荐 1 次）
+  - mqclient（被推荐 1 次）
+  - pillow-qrcode（被推荐 1 次）
+  - pyimagetool（被推荐 1 次）
+  - python-qrcode（被推荐 1 次）
+  - qr-reader（被推荐 1 次）
+  - qrcode-maker（被推荐 1 次）
+  - redis-py（被推荐 1 次）
+  - saltedhash（被推荐 1 次）
+  - settingsly（被推荐 1 次）
+  - singledispatch-template（被推荐 1 次）
+  - talquet（被推荐 1 次）
+  - zoneinfo（被推荐 1 次）

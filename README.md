@@ -129,7 +129,7 @@ python tests/test_web.py       # Web 前端 API 冒烟（自动起停服务）
 
 ## 贡献
 
-最被需要的贡献是**数据**：SlopFirewall 的实测幻觉包名种子、OpsBench 的新案例——见 [CONTRIBUTING.md](CONTRIBUTING.md)。代码 PR 同样欢迎，红线是"不给启发式披精确的外衣"。
+最被需要的贡献是**数据**：SlopFirewall 的实测幻觉包名种子、OpsBench 的新案例——见 [CONTRIBUTING.md](CONTRIBUTING.md)。我们先用它测了自己：[research/slop_query_test/](research/slop_query_test/)（GLM 模型 300 个推荐位，8.7% 查无此包，方法学与失败模式见该目录）。代码 PR 同样欢迎，红线是"不给启发式披精确的外衣"。
 
 ## 许可
 
