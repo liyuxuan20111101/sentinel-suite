@@ -309,7 +309,7 @@ def main() -> int:
     p_check.add_argument("--no-cache", action="store_true")
 
     p_scan = sub.add_parser("scan", help="扫描文件或目录（requirements*/pyproject.toml）并核查")
-    p_scan.add_argument("file", help="文件 / 目录 / -（stdin）")
+    p_scan.add_argument("file", nargs="?", default=".", help="文件 / 目录 / -（stdin）；缺省扫描当前目录")
     p_scan.add_argument("--seed")
     p_scan.add_argument("--cache")
     p_scan.add_argument("--no-cache", action="store_true")

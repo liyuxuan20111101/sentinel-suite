@@ -4,6 +4,15 @@
 
 本仓库遵循 [Keep a Changelog](https://keepachangelog.com/zh-CN/1.1.0/)，版本号用 [SemVer](https://semver.org/lang/zh-CN/)。
 
+## [0.4.0] - 2026-10-24
+
+### Added
+- 交互菜单：在真终端里不带参数运行 `sentinel.py`（或 Windows 双击 `sentinel.bat`）直接选工具，选中即用自带示例跑一遍并给出上手提示；管道/脚本环境下仍输出纯文本帮助。
+- 命令糖：`diff 文件.py`（.bak 对比 + 自动用例一条命令）、`doctor 日志.jsonl`（免 analyze 子命令）、`slop scan`（缺省扫描当前目录）、`replay 轨迹` （免 replay 子命令）。
+- `ops case-001` 只给案例时展示案情（incident.json）与上手提示。
+- `--version`；macOS/Linux 一键 shim `./sentinel`；Windows 双击 `start_web.bat` 直接开 Web 控制台。
+- tests/test_entry.py：入口冒烟测试（命令糖/帮助/自带案例解析/demo 全流程），并入 CI。
+
 ## [0.3.1] - 2026-10-24
 
 ### Added

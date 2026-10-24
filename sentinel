@@ -1,0 +1,3 @@
+#!/usr/bin/env sh
+# macOS/Linux 一键入口：./sentinel demo  /  ./sentinel web
+exec python3 "$(dirname "$0")/sentinel.py" "$@"

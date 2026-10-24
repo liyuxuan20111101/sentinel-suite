@@ -27,16 +27,17 @@ python sentinel.py demo
 python sentinel.py web
 
 # Or CLI — one command per tool:
-python sentinel.py diff --path src/calc.py --calls "calc(2, 3)|greet('hi')"
-python sentinel.py slop scan requirements.txt
+python sentinel.py diff src/calc.py            # .bak diff + auto boundary cases
+python sentinel.py slop scan                   # scan current directory
 python sentinel.py replay replay trace.jsonl --tools mytools.py
-python sentinel.py doctor analyze episodes.jsonl
+python sentinel.py doctor episodes.jsonl
 python sentinel.py ops case-001 answer.md      # `ops --list` shows bundled cases
 ```
 
-Windows: `sentinel.bat` works the same (`sentinel.bat demo`). Each tool also runs
-standalone (`python diffverifier/diffverifier.py --help`). Runnable examples for all
-five tools live in [examples/](examples/).
+No args in a real terminal opens an interactive menu. Windows: `sentinel.bat` is the
+same entry (double-click `start_web.bat` for the dashboard only); macOS/Linux: `./sentinel`.
+Each tool also runs standalone (`python diffverifier/diffverifier.py --help`). Runnable
+examples for all five tools live in [examples/](examples/).
 
 **Honest limits**: PostTrain-Doctor is heuristic, not a replication of paper metrics; OpsBench is keyword-level scoring. Every number's definition lives in the code — auditable and falsifiable. Zero third-party dependencies (pure Python 3.9+ stdlib), single-file CLIs, machine-readable exit codes, CI-ready.
 
@@ -74,8 +75,9 @@ RCA 产品宣称 MTTR 降一半，却没有中立尺子量过。**本仓库每�
 python sentinel.py demo        # 用 examples/ 自带示例依次跑通五个工具
 ```
 
-Windows 下双击或命令行用 `sentinel.bat demo` 效果相同。所有示例在
-[examples/](examples/) 里，跑完可以直接改着玩。
+在终端里不带参数运行 `python sentinel.py` 会出**交互菜单**（选工具直接看示例运行）。
+Windows 下双击 `sentinel.bat` 就是这个菜单；只想开图形界面就双击 `start_web.bat`。
+所有示例在 [examples/](examples/) 里，跑完可以直接改着玩。
 
 ### 方式一：本地 Web 前端（推荐）
 
@@ -89,17 +91,17 @@ python sentinel.py web         # 自动打开 http://127.0.0.1:8642
 ### 方式二：命令行
 
 ```bash
-# 1) 改动行为验证：对比 .bak（改动前）与当前文件在相同输入下的行为
-python sentinel.py diff --path src/calc.py --calls "calc(2, 3)|greet('hi')"
+# 1) 改动行为验证：`diff 文件.py` 一条命令 = .bak 对比 + 自动边界用例
+python sentinel.py diff src/calc.py
 
-# 2) 包幻觉门禁：装包之前核一遍
-python sentinel.py slop scan requirements.txt
+# 2) 包幻觉门禁：不接参数 = 扫描当前目录；也可指定清单文件/目录
+python sentinel.py slop scan
 
 # 3) Agent 轨迹重放：定位首次分歧步
 python sentinel.py replay replay trace.jsonl --tools mytools.py
 
 # 4) RL 训练诊断：reward hacking 指纹
-python sentinel.py doctor analyze episodes.jsonl
+python sentinel.py doctor episodes.jsonl
 
 # 5) RCA 基准：给 agent 的根因分析打分（--list 看自带案例；case-001 自动解析路径）
 python sentinel.py ops case-001 answer.md
