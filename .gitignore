@@ -8,6 +8,10 @@ __pycache__/
 data/
 *.log
 
+# PyPI 构建产物
+build_pypi/
+dist/
+
 # 秘密
 .env
 *.key
