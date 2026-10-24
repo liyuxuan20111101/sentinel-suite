@@ -136,6 +136,11 @@ class Handler(BaseHTTPRequestHandler):
             return _err(f"路径无效：{exc}")
         if not new_p.exists() or not old_p.exists():
             return _err(f"文件不存在（old={old_p} new={new_p}）")
+        # 相对路径按服务器工作目录解析；子进程在临时目录执行，必须绝对路径
+        if not old_p.is_absolute():
+            old_p = Path.cwd() / old_p
+        if not new_p.is_absolute():
+            new_p = Path.cwd() / new_p
         report, code = dv.run_diff(old_p, new_p, calls,
                                    timeout=float(b.get("timeout") or dv.TIMEOUT_S))
         return {"report": report, "code": code,

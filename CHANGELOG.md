@@ -4,6 +4,14 @@
 
 本仓库遵循 [Keep a Changelog](https://keepachangelog.com/zh-CN/1.1.0/)，版本号用 [SemVer](https://semver.org/lang/zh-CN/)。
 
+## [0.3.1] - 2026-10-24
+
+### Added
+- README 首页截图（Web 前端实际检出行为差异的界面）。
+
+### Fixed
+- Web 前端 DiffVerifier：相对路径文件在沙箱子进程里找不到——服务端现按工作目录解析为绝对路径（与 CLI 同一处问题）。
+
 ## [0.3.0] - 2026-10-23
 
 ### Added
